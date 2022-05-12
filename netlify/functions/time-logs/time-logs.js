@@ -98,7 +98,6 @@ const handler = async function (event) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        text: event.queryStringParameters.text,
         hours: mainHours - mainHoursToCompare,
         as_text:
           total_left_mins !== 0
