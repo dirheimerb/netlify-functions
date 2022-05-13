@@ -60,10 +60,6 @@ const handler = async function (event) {
       ? +event.queryStringParameters.worktime
       : 7.5;
 
-    if (!email) {
-      throw 'No email given!';
-    }
-
     //Get email from slack payload
     const eventBodyArr = event.body.split('&');
     const emailArr = eventBodyArr.filter((item) => item.includes('user_name'));
