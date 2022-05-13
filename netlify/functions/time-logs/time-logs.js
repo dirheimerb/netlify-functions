@@ -65,7 +65,9 @@ const handler = async function (event) {
       throw 'No email given!';
     }
 
-    console.log(`Bodyn teksti:  ${event.body.text}`);
+    const eventBody = JSON.parse(event.body);
+
+    console.log(`Bodyn teksti:  ${eventBody.text}`);
 
     const userJSON = await fetchData(
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
