@@ -52,13 +52,11 @@ const handler = async function (event) {
   try {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const fromDate = event.queryStringParameters.from || '2021-01-01';
-    const fromDateStr = fromDate.replace(/-/g, '');
-    const toDate = event.queryStringParameters.to || dateConvert(yesterday);
-    const toDateStr = toDate.replace(/-/g, '');
-    const worktime = event.queryStringParameters.worktime
-      ? +event.queryStringParameters.worktime
-      : 7.5;
+    let fromDate = '2021-01-01';
+    let fromDateStr = fromDate.replace(/-/g, '');
+    let toDate = dateConvert(yesterday);
+    let toDateStr = toDate.replace(/-/g, '');
+    let worktime = 7.5;
 
     //Get email from slack payload
     const eventBodyArr = event.body.split('&');
@@ -67,8 +65,11 @@ const handler = async function (event) {
 
     //Get custom data from slack payload
     const textArr = eventBodyArr.filter((item) => item.includes('text='));
-    const custom_text = textArr[0].replace('text=', '');
-    console.log(custom_text);
+    const customContent = textArr[0].replace('text=', '');
+    if (customContent) {
+      const customContentArr = customContent.split('%3D');
+      console.log(customContentArr);
+    }
 
     const userJSON = await fetchData(
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
