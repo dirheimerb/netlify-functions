@@ -67,7 +67,7 @@ const handler = async function (event) {
     const textArr = eventBodyArr.filter((item) => item.includes('text='));
     const customContent = textArr[0].replace('text=', '');
     if (customContent) {
-      const customContentArr = customContent.split('%3D');
+      const customContentArr = customContent.split('+');
       console.log(customContentArr);
     }
 
