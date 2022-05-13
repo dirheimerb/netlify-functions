@@ -68,7 +68,11 @@ const handler = async function (event) {
     const customContent = textArr[0].replace('text=', '');
     if (customContent) {
       const customContentArr = customContent.split('+');
+      const customDateFrom = customContentArr.filter((item) => {
+        item.includes('from')[0].replace('from%3D', '');
+      });
       console.log(customContentArr);
+      console.log(customDateFrom);
     }
 
     const userJSON = await fetchData(
