@@ -67,8 +67,8 @@ const handler = async function (event) {
 
     const eventBodyArr = event.body.split('&');
     const emailArr = eventBodyArr.filter(item => item.includes('user_name'));
-    const email = emailArr[0].replace('user_name=', '') =+ '@woolman.io';
-    console.log(email);
+    const Email = emailArr[0].replace('user_name=', '') =+ '@woolman.io';
+    console.log(Email);
 
     const textArr = eventBodyArr.filter(item => item.includes('text='));
     const text = textArr[0].replace('text=', '');
