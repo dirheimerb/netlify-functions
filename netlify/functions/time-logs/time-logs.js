@@ -52,7 +52,6 @@ const handler = async function (event) {
   try {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const email = event.queryStringParameters.email;
     const fromDate = event.queryStringParameters.from || '2021-01-01';
     const fromDateStr = fromDate.replace(/-/g, '');
     const toDate = event.queryStringParameters.to || dateConvert(yesterday);
@@ -65,11 +64,12 @@ const handler = async function (event) {
       throw 'No email given!';
     }
 
+    //Get email from slack payload
     const eventBodyArr = event.body.split('&');
     const emailArr = eventBodyArr.filter((item) => item.includes('user_name'));
-    const newEmail = `${emailArr[0].replace('user_name=', '')}@woolman.io`;
-    console.log(newEmail);
+    const email = `${emailArr[0].replace('user_name=', '')}@woolman.io`;
 
+    //Get custom data from slack payload
     const textArr = eventBodyArr.filter((item) => item.includes('text='));
     const custom_text = textArr[0].replace('text=', '');
     console.log(custom_text);
