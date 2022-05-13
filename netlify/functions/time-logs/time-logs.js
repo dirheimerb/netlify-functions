@@ -65,14 +65,14 @@ const handler = async function (event) {
       throw 'No email given!';
     }
 
-    const eventBodyArr = event.body.split('&');
-    const emailArr = eventBodyArr.filter(item => item.includes('user_name'));
-    const Email = emailArr[0].replace('user_name=', '') =+ '@woolman.io';
-    console.log(Email);
+    // const eventBodyArr = event.body.split('&');
+    // const emailArr = eventBodyArr.filter(item => item.includes('user_name'));
+    // const Email = emailArr[0].replace('user_name=', '') =+ '@woolman.io';
+    // console.log(Email);
 
-    const textArr = eventBodyArr.filter(item => item.includes('text='));
-    const text = textArr[0].replace('text=', '');
-    console.log(text);
+    // const textArr = eventBodyArr.filter(item => item.includes('text='));
+    // const text = textArr[0].replace('text=', '');
+    // console.log(text);
 
     const userJSON = await fetchData(
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
