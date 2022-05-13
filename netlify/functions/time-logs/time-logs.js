@@ -63,6 +63,7 @@ const handler = async function (event) {
     let toDate = dateConvert(yesterday);
     let toDateStr = toDate.replace(/-/g, '');
     let worktime = 7.5;
+    let startingBalance = 0;
 
     //Get email from slack payload
     const eventBodyArr = event.body.split('&');
@@ -85,6 +86,16 @@ const handler = async function (event) {
         toDate = customDateTo;
         toDateStr = toDate.replace(/-/g, '');
       }
+
+      const customWorktime = arrToString(customContentArr, 'worktime%3D');
+      if (customWorktime) {
+        worktime = +customWorktime;
+      }
+
+      const customStartingBalance = arrToString(customContentArr, 'start%3D');
+      if (customStartingBalance) {
+        startingBalance = customStartingBalance;
+      }
     }
 
     const userJSON = await fetchData(
@@ -102,7 +113,9 @@ const handler = async function (event) {
     const days = workDays(new Date(fromDate), new Date(toDate));
     const mainHoursToCompare = days * worktime;
 
-    const total_hours = Math.trunc(mainHours - mainHoursToCompare);
+    const total_hours = Math.trunc(
+      mainHours - mainHoursToCompare - startingBalance
+    );
     const total_left_mins = Math.ceil(
       (Math.abs(mainHours - total_hours) * 60) % 60
     );
