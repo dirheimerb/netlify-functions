@@ -65,26 +65,28 @@ const handler = async function (event) {
       throw 'No email given!';
     }
 
-    // const eventBody = JSON.parse(event.body);
+    const eventBodyArr = event.body.split('&');
+    const emailArr = eventBodyArr.filter(item => item.includes('user_name'));
+    const email = emailArr[0].replace('user_name=', '') =+ '@woolman.io';
+    console.log(email);
 
-    console.log(`Bodyn teksti:  ${event.body}`);
+    const textArr = eventBodyArr.filter(item => item.includes('text='));
+    const text = textArr[0].replace('text=', '');
+    console.log(text);
 
     const userJSON = await fetchData(
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
     );
     const userId = userJSON.people[0].id;
-    console.log(userId);
 
     const mainHoursJSON = await fetchData(
       `https://woolman.eu.teamwork.com/time/total.json?userId=${userId}&fromDate=${fromDateStr}&toDate=${toDateStr}&projectType=all`
     );
     const mainHours = mainHoursJSON['time-totals']['total-hours-sum'];
-    console.log(mainHours);
 
     const pastSevenDaysHours = await pastSevenDays(yesterday, userId, worktime);
 
     const days = workDays(new Date(fromDate), new Date(toDate));
-    console.log('days', days);
     const mainHoursToCompare = days * worktime;
 
     console.log(mainHours - mainHoursToCompare);
