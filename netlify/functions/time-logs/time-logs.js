@@ -48,6 +48,12 @@ const pastSevenDays = async function (yesterday, userId, worktime) {
   return totalHours - hoursToCompare;
 };
 
+const arrToString = (arr, string) => {
+  const filteredArr = arr.filter((item) => item.includes(string));
+  const newString = filteredArr[0].replace(string, '');
+  return newString;
+};
+
 const handler = async function (event) {
   try {
     const yesterday = new Date();
@@ -68,11 +74,12 @@ const handler = async function (event) {
     const customContent = textArr[0].replace('text=', '');
     if (customContent) {
       const customContentArr = customContent.split('+');
-      const customDateFrom = customContentArr.filter((item) => {
-        item.includes('from')[0].replace('from%3D', '');
-      });
-      console.log(customContentArr);
+
+      const customDateFrom = arrToString(customContentArr, 'from%3D');
+      const customDateTo = arrToString(customContentArr, 'to%3D');
+
       console.log(customDateFrom);
+      console.log(customDateTo);
     }
 
     const userJSON = await fetchData(
