@@ -147,6 +147,7 @@ const handler = async function (event) {
       }),
     };
   } catch (err) {
+    console.log(err);
     return {
       statusCode: 500,
       body: JSON.stringify({
