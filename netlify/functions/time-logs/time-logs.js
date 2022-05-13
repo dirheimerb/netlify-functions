@@ -110,21 +110,27 @@ const handler = async function (event) {
     const past_seven_days_left_mins = Math.ceil(
       (Math.abs(pastSevenDaysHours - past_seven_days_h) * 60) % 60
     );
+
+    //hours: mainHours - mainHoursToCompare,
+    //Texts to be rendered
+    const totalsText =
+      total_left_mins !== 0
+        ? `${total_hours}h ${total_left_mins}min`
+        : `${total_hours}h`;
+
+    const past7Days =
+      past_seven_days_left_mins !== 0
+        ? `${past_seven_days_h}h ${past_seven_days_left_mins}min`
+        : `${past_seven_days_h}h`;
+
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        hours: mainHours - mainHoursToCompare,
-        as_text:
-          total_left_mins !== 0
-            ? `${total_hours}h ${total_left_mins}min`
-            : `${total_hours}h`,
-        last_7_days:
-          past_seven_days_left_mins !== 0
-            ? `${past_seven_days_h}h ${past_seven_days_left_mins}min`
-            : `${past_seven_days_h}h`,
+        text: `Your balances are ${totalsText} from ${fromDate} to ${toDate}. From last 7 days your balances are ${past7Days}`,
+        response_type: 'in_channel',
       }),
     };
   } catch (err) {
