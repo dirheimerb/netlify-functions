@@ -76,10 +76,15 @@ const handler = async function (event) {
       const customContentArr = customContent.split('+');
 
       const customDateFrom = arrToString(customContentArr, 'from%3D');
+      if (customDateFrom) {
+        fromDate = customDateFrom;
+        fromDateStr = fromDate.replace(/-/g, '');
+      }
       const customDateTo = arrToString(customContentArr, 'to%3D');
-
-      console.log(customDateFrom);
-      console.log(customDateTo);
+      if (customDateTo) {
+        toDate = customDateTo;
+        toDateStr = toDate.replace(/-/g, '');
+      }
     }
 
     const userJSON = await fetchData(
