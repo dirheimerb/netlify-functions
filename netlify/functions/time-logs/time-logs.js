@@ -65,14 +65,14 @@ const handler = async function (event) {
       throw 'No email given!';
     }
 
-    // const eventBodyArr = event.body.split('&');
-    // const emailArr = eventBodyArr.filter(item => item.includes('user_name'));
-    // const Email = emailArr[0].replace('user_name=', '') =+ '@woolman.io';
-    // console.log(Email);
+    const eventBodyArr = event.body.split('&');
+    const emailArr = eventBodyArr.filter((item) => item.includes('user_name'));
+    const newEmail = `${emailArr[0].replace('user_name=', '')}@woolman.io`;
+    console.log(newEmail);
 
-    // const textArr = eventBodyArr.filter(item => item.includes('text='));
-    // const text = textArr[0].replace('text=', '');
-    // console.log(text);
+    const textArr = eventBodyArr.filter((item) => item.includes('text='));
+    const custom_text = textArr[0].replace('text=', '');
+    console.log(custom_text);
 
     const userJSON = await fetchData(
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
@@ -89,7 +89,6 @@ const handler = async function (event) {
     const days = workDays(new Date(fromDate), new Date(toDate));
     const mainHoursToCompare = days * worktime;
 
-    console.log(mainHours - mainHoursToCompare);
     const total_hours = Math.trunc(mainHours - mainHoursToCompare);
     const total_left_mins = Math.ceil(
       (Math.abs(mainHours - total_hours) * 60) % 60
