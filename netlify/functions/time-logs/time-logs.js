@@ -130,14 +130,16 @@ const handler = async function (event) {
       },
       body: JSON.stringify({
         text: `Your balances are ${totalsText} from ${fromDate} to ${toDate}. From last 7 days your balances are ${past7Days}`,
-        response_type: 'in_channel',
+        response_type: 'ephemeral',
       }),
     };
   } catch (err) {
-    console.log(err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err }),
+      body: JSON.stringify({
+        text: `Something went wrong. Make sure you typed extra parameters correctly!`,
+        response_type: 'ephemeral',
+      }),
     };
   }
 };
