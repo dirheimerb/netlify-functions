@@ -76,26 +76,30 @@ const handler = async function (event) {
       const customContent = textArr[0].replace('text=', '');
       const customContentArr = customContent.split('+');
 
-      const customDateFrom = arrToString(customContentArr, 'from%3D');
-      if (customDateFrom) {
+      if (customContentArr.includes('from%3D')) {
+        const customDateFrom = arrToString(customContentArr, 'from%3D');
         fromDate = customDateFrom;
         fromDateStr = fromDate.replace(/-/g, '');
       }
-      const customDateTo = arrToString(customContentArr, 'to%3D');
-      if (customDateTo) {
+
+      if (customContentArr.includes('to%3D')) {
+        const customDateTo = arrToString(customContentArr, 'to%3D');
         toDate = customDateTo;
         toDateStr = toDate.replace(/-/g, '');
       }
 
-      // const customWorktime = arrToString(customContentArr, 'worktime%3D');
-      // if (customWorktime) {
-      //   worktime = +customWorktime;
-      // }
+      if (customContentArr.includes('worktime%3D')) {
+        const customWorktime = arrToString(customContentArr, 'worktime%3D');
+        worktime = +customWorktime;
+      }
 
-      // const customStartingBalance = arrToString(customContentArr, 'start%3D');
-      // if (customStartingBalance) {
-      //   startingBalance = customStartingBalance;
-      // }
+      if (customContentArr.includes('balances%3D')) {
+        const customStartingBalance = arrToString(
+          customContentArr,
+          'balances%3D'
+        );
+        startingBalance = customStartingBalance;
+      }
     }
 
     const userJSON = await fetchData(
