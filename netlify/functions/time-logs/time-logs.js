@@ -99,6 +99,7 @@ const handler = async function (event) {
           'balances%3D'
         );
         startingBalance = customStartingBalance;
+        console.log(`Balances ${startingBalance}`);
       }
     }
 
