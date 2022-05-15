@@ -73,9 +73,10 @@ const handler = async function (event) {
     //Get custom data from slack payload
     const textArr = eventBodyArr.filter((item) => item.includes('text='));
     if (textArr) {
-      const customContent = textArr[0].replace('text=', '');
-      const customContentArr = customContent.split('+');
-      console.log(customContentArr);
+      let customContentArr = textArr[0].replace('text=', '');
+      if (customContentArr.length > 1) {
+        customContentArr = customContentArr.split('+');
+      }
 
       if (customContentArr.includes('from%3D')) {
         const customDateFrom = arrToString(customContentArr, 'from%3D');
