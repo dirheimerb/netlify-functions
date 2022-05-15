@@ -75,6 +75,7 @@ const handler = async function (event) {
     if (textArr) {
       const customContent = textArr[0].replace('text=', '');
       const customContentArr = customContent.split('+');
+      console.log(customContentArr);
 
       if (customContentArr.includes('from%3D')) {
         const customDateFrom = arrToString(customContentArr, 'from%3D');
