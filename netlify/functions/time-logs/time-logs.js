@@ -72,8 +72,8 @@ const handler = async function (event) {
 
     //Get custom data from slack payload
     const textArr = eventBodyArr.filter((item) => item.includes('text='));
-    const customContent = textArr[0].replace('text=', '');
-    if (customContent) {
+    if (textArr) {
+      const customContent = textArr[0].replace('text=', '');
       const customContentArr = customContent.split('+');
 
       const customDateFrom = arrToString(customContentArr, 'from%3D');
@@ -87,15 +87,15 @@ const handler = async function (event) {
         toDateStr = toDate.replace(/-/g, '');
       }
 
-      const customWorktime = arrToString(customContentArr, 'worktime%3D');
-      if (customWorktime) {
-        worktime = +customWorktime;
-      }
+      // const customWorktime = arrToString(customContentArr, 'worktime%3D');
+      // if (customWorktime) {
+      //   worktime = +customWorktime;
+      // }
 
-      const customStartingBalance = arrToString(customContentArr, 'start%3D');
-      if (customStartingBalance) {
-        startingBalance = customStartingBalance;
-      }
+      // const customStartingBalance = arrToString(customContentArr, 'start%3D');
+      // if (customStartingBalance) {
+      //   startingBalance = customStartingBalance;
+      // }
     }
 
     const userJSON = await fetchData(
