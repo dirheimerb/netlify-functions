@@ -102,7 +102,7 @@ const handler = async function (event) {
           customContentArr,
           'balances%3D'
         );
-        startingBalance = customStartingBalance;
+        startingBalance = +customStartingBalance;
         console.log(`Balances ${startingBalance}`);
       }
     }
