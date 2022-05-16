@@ -78,6 +78,8 @@ const handler = async function (event) {
         customContentArr = customContentArr.split('+');
       }
 
+      console.log(customContentArr);
+
       if (customContentArr.includes('from%3D')) {
         const customDateFrom = arrToString(customContentArr, 'from%3D');
         fromDate = customDateFrom;
