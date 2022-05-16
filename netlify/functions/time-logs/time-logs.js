@@ -78,26 +78,26 @@ const handler = async function (event) {
         customContentArr = customContentArr.split('+');
       }
 
-      console.log(customContentArr);
+      //Check parameters
 
-      if (customContentArr.includes('from%3D')) {
+      if (customContentArr.some((e) => e.includes('from%3D'))) {
         const customDateFrom = arrToString(customContentArr, 'from%3D');
         fromDate = customDateFrom;
         fromDateStr = fromDate.replace(/-/g, '');
       }
 
-      if (customContentArr.includes('to%3D')) {
+      if (customContentArr.some((e) => e.includes('to%3D'))) {
         const customDateTo = arrToString(customContentArr, 'to%3D');
         toDate = customDateTo;
         toDateStr = toDate.replace(/-/g, '');
       }
 
-      if (customContentArr.includes('worktime%3D')) {
+      if (customContentArr.some((e) => e.includes('worktime%3D'))) {
         const customWorktime = arrToString(customContentArr, 'worktime%3D');
         worktime = +customWorktime;
       }
 
-      if (customContentArr.includes('balances%3D')) {
+      if (customContentArr.some((e) => e.includes('balances%3D'))) {
         const customStartingBalance = arrToString(
           customContentArr,
           'balances%3D'
