@@ -123,7 +123,7 @@ const handler = async function (event) {
     const mainHoursToCompare = days * worktime;
 
     const total_hours = Math.trunc(
-      mainHours - mainHoursToCompare - startingBalance
+      mainHours - mainHoursToCompare + startingBalance
     );
     const total_left_mins = Math.ceil(
       (Math.abs(mainHours - total_hours) * 60) % 60
