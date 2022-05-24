@@ -106,6 +106,7 @@ const handler = async function (event) {
     const userJSON = await fetchData(
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
     );
+    console.log(userJSON);
     const userId = userJSON.people[0].id;
 
     const mainHoursJSON = await fetchData(
