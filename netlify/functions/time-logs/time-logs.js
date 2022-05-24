@@ -122,14 +122,14 @@ const handler = async function (event) {
       mainHours - mainHoursToCompare + startingBalance
     );
     const total_left_mins = Math.ceil(
-      (Math.abs(mainHours - total_hours) * 60) % 60
+      Math.abs((mainHours - total_hours) % 1) * 60
     );
     const past_seven_days_h = Math.trunc(pastSevenDaysHours);
     const past_seven_days_left_mins = Math.ceil(
       (Math.abs(pastSevenDaysHours - past_seven_days_h) * 60) % 60
     );
 
-    const minutes = mainHours - total_hours;
+    const minutes = (mainHours - total_hours) % 1;
     console.log(minutes);
 
     //Texts to be rendered
