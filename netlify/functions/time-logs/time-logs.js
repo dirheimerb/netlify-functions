@@ -129,8 +129,8 @@ const handler = async function (event) {
       (Math.abs(pastSevenDaysHours - past_seven_days_h) * 60) % 60
     );
 
-    const minutes = mainHours - total_hours;
-    console.log(minutes);
+    // const minutes = mainHours - total_hours;
+    // console.log(minutes);
 
     //Texts to be rendered
     const totalsText =
