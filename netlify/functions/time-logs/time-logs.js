@@ -118,23 +118,13 @@ const handler = async function (event) {
     const days = workDays(new Date(fromDate), new Date(toDate));
     const mainHoursToCompare = days * worktime;
 
-    const total_hours = Math.trunc(
-      mainHours - mainHoursToCompare + startingBalance
-    );
-    const total_left_mins = Math.ceil(
-      ((mainHours - mainHoursToCompare + startingBalance) % 1) * 60
-    );
+    const calculatedMinutes = mainHours - mainHoursToCompare + startingBalance;
+
+    const total_hours = Math.trunc(calculatedMinutes);
+    const total_left_mins = Math.ceil((calculatedMinutes % 1) * 60);
     const past_seven_days_h = Math.trunc(pastSevenDaysHours);
     const past_seven_days_left_mins = Math.ceil(
       ((pastSevenDaysHours - past_seven_days_h) % 1) % 60
-    );
-
-    console.log(mainHours);
-    console.log(mainHoursToCompare);
-    console.log(startingBalance);
-
-    console.log(
-      Math.ceil(((mainHours - mainHoursToCompare + startingBalance) % 1) * 60)
     );
 
     //Texts to be rendered
