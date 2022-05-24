@@ -129,6 +129,10 @@ const handler = async function (event) {
       ((pastSevenDaysHours - past_seven_days_h) % 1) % 60
     );
 
+    console.log(
+      Math.ceil(((mainHours - mainHoursToCompare + startingBalance) % 1) * 60)
+    );
+
     //Texts to be rendered
     const totalsText =
       total_left_mins !== 0
