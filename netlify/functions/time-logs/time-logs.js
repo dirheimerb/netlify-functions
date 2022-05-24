@@ -106,7 +106,6 @@ const handler = async function (event) {
     const userJSON = await fetchData(
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
     );
-    console.log(userJSON);
     const userId = userJSON.people[0].id;
 
     const mainHoursJSON = await fetchData(
@@ -130,8 +129,8 @@ const handler = async function (event) {
       (Math.abs(pastSevenDaysHours - past_seven_days_h) * 60) % 60
     );
 
-    // const minutes = mainHours - total_hours;
-    // console.log(minutes);
+    const minutes = mainHours - total_hours;
+    console.log(minutes);
 
     //Texts to be rendered
     const totalsText =
