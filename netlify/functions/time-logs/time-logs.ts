@@ -38,6 +38,7 @@ const handler: Handler = async (event, context) => {
     const textArr: Array<string> = eventBodyArr.filter((item: string) =>
       item.includes('text=')
     );
+    console.log(textArr);
 
     //remove text= string from custom data
     const customParameter: string = textArr[0].replace('text=', '');
