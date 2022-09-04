@@ -11,6 +11,7 @@ import {
 //
 const handler: Handler = async (event, context) => {
   try {
+    console.log('event');
     console.log(event);
     //Get date for yesterday
     const yesterday: Date = new Date();
@@ -32,6 +33,7 @@ const handler: Handler = async (event, context) => {
     const eventBodyArr = event.body.split('&');
     //Filter user name from Slcak payload body
     const emailArr = eventBodyArr.filter((item: any) => {
+      console.log('user item');
       console.log(item);
       item.includes('user_name');
     });
@@ -40,11 +42,13 @@ const handler: Handler = async (event, context) => {
 
     //Get custom data from slack payload
     const textArr = eventBodyArr.filter((item: any) => {
+      console.log('text item');
       console.log(item);
       item.includes('text=');
     });
     //remove text= string from custom data
-    let customContentArr = textArr[0].replace('text=', '');
+    let customContentArr: any = textArr[0].replace('text=', '');
+    console.log('customContentArr');
     console.log(customContentArr);
     if (customContentArr.length > 1) {
       customContentArr = customContentArr.split('+');
