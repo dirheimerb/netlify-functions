@@ -41,11 +41,9 @@ const handler: Handler = async (event, context) => {
     const email = `${emailArr[0].replace('user_name=', '')}@woolman.io`;
 
     //Get custom data from slack payload
-    const textArr = eventBodyArr.filter((item: any) => {
-      console.log('text item');
-      console.log(item);
-      item.includes('text=');
-    });
+    const textArr = eventBodyArr.filter((item: any) => item.includes('text='));
+    console.log('textArr');
+    console.log(textArr);
     //remove text= string from custom data
     let customContentArr: any = textArr[0].replace('text=', '');
     console.log('customContentArr');
