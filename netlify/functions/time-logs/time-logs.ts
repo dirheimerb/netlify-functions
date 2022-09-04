@@ -1,4 +1,3 @@
-// TODO: Define event interface for handler function
 import { Handler } from '@netlify/functions';
 import {
   fetchTeamworkData,
@@ -8,17 +7,15 @@ import {
   arrToString,
 } from './helpers';
 
-//
+//Netlify mandatory handler function
 const handler: Handler = async (event, context) => {
   try {
-    console.log('event');
-    console.log(event);
     //Get date for yesterday
     const yesterday: Date = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    //Orignal date when we started to log hours
+    //Default from date
     let fromDate: string = '2021-01-01';
-    //Date to teamwork format
+    //From date to teamwork format
     let fromDateStr: string = fromDate.replace(/-/g, '');
     //Default to date
     let toDate: string = dateConvert(yesterday);
@@ -30,49 +27,49 @@ const handler: Handler = async (event, context) => {
     let startingBalance: number = 0;
 
     //Get Slack payload body
-    const eventBodyArr = event.body.split('&');
+    const eventBodyArr: Array<string> = event.body.split('&');
     //Filter user name from Slcak payload body
-    const emailArr = eventBodyArr.filter((item: any) =>
+    const emailArr: Array<string> = eventBodyArr.filter((item: string) =>
       item.includes('user_name')
     );
-    console.log('emailArr');
-    console.log(emailArr);
     //Convert username to woolman email
-    const email = `${emailArr[0].replace('user_name=', '')}@woolman.io`;
-
+    const email: string = `${emailArr[0].replace('user_name=', '')}@woolman.io`;
     //Get custom data from slack payload
-    const textArr = eventBodyArr.filter((item: any) => item.includes('text='));
-    console.log('textArr');
-    console.log(textArr);
+    const textArr: Array<string> = eventBodyArr.filter((item: string) =>
+      item.includes('text=')
+    );
+
     //remove text= string from custom data
-    let customContentArr: any = textArr[0].replace('text=', '');
-    console.log('customContentArr');
-    console.log(customContentArr);
-    if (customContentArr.length > 1) {
-      customContentArr = customContentArr.split('+');
+    const customParameter: string = textArr[0].replace('text=', '');
+    console.log(customParameter);
+    let customParameters: Array<string>;
+    //If list is not empty, split it to array from + characters
+    if (customParameter.length > 1) {
+      customParameters = customParameter.split('+');
     }
-    if (customContentArr.length > 0) {
+    console.log(customParameters);
+    if (customParameters.length > 0) {
       //Get custom starting date from Slack parameters
-      if (customContentArr.some((e: any) => e.includes('from%3D'))) {
-        const customDateFrom = arrToString(customContentArr, 'from%3D');
+      if (customParameters.some((e: any) => e.includes('from%3D'))) {
+        const customDateFrom = arrToString(customParameters, 'from%3D');
         fromDate = customDateFrom;
         fromDateStr = fromDate.replace(/-/g, '');
       }
       //Get custom end date from Slack parameters
-      if (customContentArr.some((e: any) => e.includes('to%3D'))) {
-        const customDateTo = arrToString(customContentArr, 'to%3D');
+      if (customParameters.some((e: any) => e.includes('to%3D'))) {
+        const customDateTo = arrToString(customParameters, 'to%3D');
         toDate = customDateTo;
         toDateStr = toDate.replace(/-/g, '');
       }
       //Get custom worktime from Slack parameters
-      if (customContentArr.some((e: any) => e.includes('worktime%3D'))) {
-        const customWorktime = arrToString(customContentArr, 'worktime%3D');
+      if (customParameters.some((e: any) => e.includes('worktime%3D'))) {
+        const customWorktime = arrToString(customParameters, 'worktime%3D');
         worktime = +customWorktime;
       }
       //Get custom starting balances from Slack parameters
-      if (customContentArr.some((e: any) => e.includes('balances%3D'))) {
+      if (customParameters.some((e: any) => e.includes('balances%3D'))) {
         const customStartingBalance = arrToString(
-          customContentArr,
+          customParameters,
           'balances%3D'
         );
         startingBalance = +customStartingBalance;
