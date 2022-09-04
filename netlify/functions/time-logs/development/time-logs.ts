@@ -1,100 +1,73 @@
-const fetch = require('node-fetch');
+// TODO: Define event interface for handler function
+import {
+  fetchTeamworkData,
+  pastSevenDays,
+  workDays,
+  dateConvert,
+  arrToString,
+} from './helpers';
 
-const workDays = (start, end) => {
-  let count = 0;
-  let cur = start;
-  while (cur <= end) {
-    const dayOfWeek = cur.getDay();
-    const isWeekend = dayOfWeek == 6 || dayOfWeek == 0;
-    if (!isWeekend) count++;
-    const nextDay = new Date(cur);
-    nextDay.setDate(nextDay.getDate() + 1);
-    cur = nextDay;
-  }
-  return count;
-};
-
-const dateConvert = (date) => date.toISOString().split('T')[0].toString();
-
-const fetchData = async function (url) {
-  const credentials = `${process.env.TEAMWORK_USER}:${process.env.TEAMWORK_PASS}`;
-  const data = await fetch(url, {
-    headers: {
-      Authorization: 'Basic '.concat(
-        Buffer.from(credentials, 'utf8').toString('base64')
-      ),
-    },
-  });
-  const dataJSON = await data.json();
-  return dataJSON;
-};
-
-const pastSevenDays = async function (yesterday, userId, worktime) {
-  const from = new Date();
-  from.setDate(from.getDate() - 7);
-  const fromDate = dateConvert(from);
-  const fromDateStr = fromDate.replace(/-/g, '');
-  const toDate = dateConvert(yesterday);
-  const toDateStr = toDate.replace(/-/g, '');
-
-  const timeJSON = await fetchData(
-    `https://woolman.eu.teamwork.com/time/total.json?userId=${userId}&fromDate=${fromDateStr}&toDate=${toDateStr}&projectType=all`
-  );
-  const totalHours = timeJSON['time-totals']['total-hours-sum'];
-
-  const days = workDays(new Date(fromDate), new Date(toDate));
-  const hoursToCompare = days * worktime;
-
-  return totalHours - hoursToCompare;
-};
-
-const arrToString = (arr, string) => {
-  const filteredArr = arr.filter((item) => item.includes(string));
-  const newString = filteredArr[0].replace(string, '');
-  return newString;
-};
-
-const handler = async function (event) {
+//
+export const handler = async function (event: any) {
   try {
-    const yesterday = new Date();
+    console.log(event);
+    //Get date for yesterday
+    const yesterday: Date = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    let fromDate = '2021-01-01';
-    let fromDateStr = fromDate.replace(/-/g, '');
-    let toDate = dateConvert(yesterday);
-    let toDateStr = toDate.replace(/-/g, '');
-    let worktime = 7.5;
-    let startingBalance = 0;
+    //Orignal date when we started to log hours
+    let fromDate: string = '2021-01-01';
+    //Date to teamwork format
+    let fromDateStr: string = fromDate.replace(/-/g, '');
+    //Default to date
+    let toDate: string = dateConvert(yesterday);
+    //Default to date to teamwork format
+    let toDateStr: string = toDate.replace(/-/g, '');
+    //Default worktime
+    let worktime: number = 7.5;
+    //Default balances from before 2021-01-01
+    let startingBalance: number = 0;
 
-    //Get email from slack payload
+    //Get Slack payload body
     const eventBodyArr = event.body.split('&');
-    const emailArr = eventBodyArr.filter((item) => item.includes('user_name'));
+    //Filter user name from Slcak payload body
+    const emailArr = eventBodyArr.filter((item: any) => {
+      console.log(item);
+      item.includes('user_name');
+    });
+    //Convert username to woolman email
     const email = `${emailArr[0].replace('user_name=', '')}@woolman.io`;
 
     //Get custom data from slack payload
-    const textArr = eventBodyArr.filter((item) => item.includes('text='));
+    const textArr = eventBodyArr.filter((item: any) => {
+      console.log(item);
+      item.includes('text=');
+    });
+    //remove text= string from custom data
     let customContentArr = textArr[0].replace('text=', '');
+    console.log(customContentArr);
     if (customContentArr.length > 1) {
       customContentArr = customContentArr.split('+');
     }
     if (customContentArr.length > 0) {
-      if (customContentArr.some((e) => e.includes('from%3D'))) {
+      //Get custom starting date from Slack parameters
+      if (customContentArr.some((e: any) => e.includes('from%3D'))) {
         const customDateFrom = arrToString(customContentArr, 'from%3D');
         fromDate = customDateFrom;
         fromDateStr = fromDate.replace(/-/g, '');
       }
-
-      if (customContentArr.some((e) => e.includes('to%3D'))) {
+      //Get custom end date from Slack parameters
+      if (customContentArr.some((e: any) => e.includes('to%3D'))) {
         const customDateTo = arrToString(customContentArr, 'to%3D');
         toDate = customDateTo;
         toDateStr = toDate.replace(/-/g, '');
       }
-
-      if (customContentArr.some((e) => e.includes('worktime%3D'))) {
+      //Get custom worktime from Slack parameters
+      if (customContentArr.some((e: any) => e.includes('worktime%3D'))) {
         const customWorktime = arrToString(customContentArr, 'worktime%3D');
         worktime = +customWorktime;
       }
-
-      if (customContentArr.some((e) => e.includes('balances%3D'))) {
+      //Get custom starting balances from Slack parameters
+      if (customContentArr.some((e: any) => e.includes('balances%3D'))) {
         const customStartingBalance = arrToString(
           customContentArr,
           'balances%3D'
@@ -103,12 +76,12 @@ const handler = async function (event) {
       }
     }
 
-    const userJSON = await fetchData(
+    const userJSON = await fetchTeamworkData(
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
     );
     const userId = userJSON.people[0].id;
 
-    const mainHoursJSON = await fetchData(
+    const mainHoursJSON = await fetchTeamworkData(
       `https://woolman.eu.teamwork.com/time/total.json?userId=${userId}&fromDate=${fromDateStr}&toDate=${toDateStr}&projectType=all`
     );
     const mainHours = mainHoursJSON['time-totals']['total-hours-sum'];
@@ -128,12 +101,12 @@ const handler = async function (event) {
     );
 
     //Texts to be rendered
-    const totalsText =
+    const totalsText: string =
       total_left_mins !== 0
         ? `${total_hours}h ${total_left_mins}min`
         : `${total_hours}h`;
 
-    const past7Days =
+    const past7Days: string =
       past_seven_days_left_mins !== 0
         ? `${past_seven_days_h}h ${past_seven_days_left_mins}min`
         : `${past_seven_days_h}h`;
@@ -151,7 +124,7 @@ const handler = async function (event) {
   } catch (err) {
     console.log(err);
     return {
-      statusCode: 500,
+      statusCode: 200,
       body: JSON.stringify({
         text: `Something went wrong. Make sure you typed extra parameters correctly!`,
         response_type: 'ephemeral',
@@ -159,5 +132,3 @@ const handler = async function (event) {
     };
   }
 };
-
-module.exports = { handler };
