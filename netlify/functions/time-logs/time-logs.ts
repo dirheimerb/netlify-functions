@@ -32,11 +32,11 @@ const handler: Handler = async (event, context) => {
     //Get Slack payload body
     const eventBodyArr = event.body.split('&');
     //Filter user name from Slcak payload body
-    const emailArr = eventBodyArr.filter((item: any) => {
-      console.log('user item');
-      console.log(item);
-      item.includes('user_name');
-    });
+    const emailArr = eventBodyArr.filter((item: any) =>
+      item.includes('user_name')
+    );
+    console.log('emailArr');
+    console.log(emailArr);
     //Convert username to woolman email
     const email = `${emailArr[0].replace('user_name=', '')}@woolman.io`;
 
