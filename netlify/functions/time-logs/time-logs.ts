@@ -38,18 +38,11 @@ const handler: Handler = async (event, context) => {
     const textArr: Array<string> = eventBodyArr.filter((item: string) =>
       item.includes('text=')
     );
-    console.log(textArr);
-
-    //remove text= string from custom data
+    //Remove text= string from custom data
     const customParameter: string = textArr[0].replace('text=', '');
-    console.log(customParameter);
-    let customParameters: Array<string>;
     //If list is not empty, split it to array from + characters
-    if (customParameter.length > 1) {
-      customParameters = customParameter.split('+');
-    }
-    console.log(customParameters);
-    if (customParameters.length > 0) {
+    if (customParameter) {
+      const customParameters: Array<string> = customParameter.split('+');
       //Get custom starting date from Slack parameters
       if (customParameters.some((e: any) => e.includes('from%3D'))) {
         const customDateFrom = arrToString(customParameters, 'from%3D');
