@@ -6,6 +6,7 @@ import {
   dateConvert,
   arrToString,
 } from './helpers';
+import { TimeTotals, TeamworkUser } from './types';
 
 //Netlify mandatory handler function, thins function is run when Netlify function is
 const handler: Handler = async (event, context) => {
@@ -70,29 +71,32 @@ const handler: Handler = async (event, context) => {
       }
     }
 
-    const userJSON = await fetchTeamworkData(
+    //Get user data from teamwork API
+    const userData: TeamworkUser = await fetchTeamworkData(
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
     );
-    const userId = userJSON.people[0].id;
-    console.log(userJSON);
-
-    const mainHoursJSON = await fetchTeamworkData(
+    //Set user ID ased on teamwrok data we found
+    const userId = userData.people[0].id;
+    //Fetch user time logs with Teamwork user id
+    const hoursData: TimeTotals = await fetchTeamworkData(
       `https://woolman.eu.teamwork.com/time/total.json?userId=${userId}&fromDate=${fromDateStr}&toDate=${toDateStr}&projectType=all`
     );
-    const mainHours = mainHoursJSON['time-totals']['total-hours-sum'];
-    console.log(mainHoursJSON);
-
+    //Get main hours from Teamwork API response, this is the only relevant data we need
+    const loggedHours: string = hoursData['time-totals']['total-hours-sum'];
+    //Get logged hours from past seven days
     const pastSevenDaysHours: number = await pastSevenDays(
       yesterday,
       userId,
       worktime
     );
-
-    const days = workDays(new Date(fromDate), new Date(toDate));
-    const mainHoursToCompare: number = days * worktime;
+    //Set wrokdays for given dates
+    const days: number = workDays(new Date(fromDate), new Date(toDate));
+    //Calculate time that should be logged between set dates
+    const hoursToCompare: number = days * worktime;
 
     const calculatedMinutes: number =
-      mainHours - mainHoursToCompare + startingBalance;
+      +loggedHours - hoursToCompare + startingBalance;
+    console.log(calculatedMinutes);
 
     const total_hours: number = Math.trunc(calculatedMinutes);
     const total_left_mins: number = Math.ceil((calculatedMinutes % 1) * 60);

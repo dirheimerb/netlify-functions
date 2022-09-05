@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { timeTotals } from './types';
+import { TimeTotals } from './types';
 
 export const fetchTeamworkData = async function (url: string) {
   const credentials: string = `${process.env.TEAMWORK_USER}:${process.env.TEAMWORK_PASS}`;
@@ -16,7 +16,7 @@ export const fetchTeamworkData = async function (url: string) {
 
 export const pastSevenDays = async function (
   yesterday: Date,
-  userId: string,
+  userId: number,
   worktime: number
 ) {
   const from: Date = new Date();
@@ -26,7 +26,7 @@ export const pastSevenDays = async function (
   const toDate: string = dateConvert(yesterday);
   const toDateStr: string = toDate.replace(/-/g, '');
 
-  const timeJSON: timeTotals = await fetchTeamworkData(
+  const timeJSON: TimeTotals = await fetchTeamworkData(
     `https://woolman.eu.teamwork.com/time/total.json?userId=${userId}&fromDate=${fromDateStr}&toDate=${toDateStr}&projectType=all`
   );
   const totalHours: string = timeJSON['time-totals']['total-hours-sum'];
