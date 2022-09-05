@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { TimeTotals } from './types';
+import { Obj, TimeTotals } from './types';
 
 export const fetchTeamworkData = async function (url: string) {
   const credentials: string = `${process.env.TEAMWORK_USER}:${process.env.TEAMWORK_PASS}`;

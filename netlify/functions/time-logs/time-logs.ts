@@ -1,3 +1,4 @@
+//TODO: Comment helper function, figure out type for fetchTeamworkData function, try to clear main function
 import { Handler } from '@netlify/functions';
 import {
   fetchTeamworkData,
@@ -82,7 +83,7 @@ const handler: Handler = async (event, context) => {
       `https://woolman.eu.teamwork.com/time/total.json?userId=${userId}&fromDate=${fromDateStr}&toDate=${toDateStr}&projectType=all`
     );
     //Get main hours from Teamwork API response, this is the only relevant data we need
-    const loggedHours: string = hoursData['time-totals']['total-hours-sum'];
+    const teamworkHours: string = hoursData['time-totals']['total-hours-sum'];
     //Get logged hours from past seven days
     const pastSevenDaysHours: number = await pastSevenDays(
       yesterday,
@@ -93,36 +94,42 @@ const handler: Handler = async (event, context) => {
     const days: number = workDays(new Date(fromDate), new Date(toDate));
     //Calculate time that should be logged between set dates
     const hoursToCompare: number = days * worktime;
-
-    const calculatedMinutes: number =
-      +loggedHours - hoursToCompare + startingBalance;
-    console.log(calculatedMinutes);
-
-    const total_hours: number = Math.trunc(calculatedMinutes);
-    const total_left_mins: number = Math.ceil((calculatedMinutes % 1) * 60);
-    const past_seven_days_h: number = Math.trunc(pastSevenDaysHours);
-    const past_seven_days_left_mins: number = Math.ceil(
-      ((pastSevenDaysHours - past_seven_days_h) % 1) % 60
+    //Calculate hour balances based on time got from teamwork and days set to Slack message
+    const hours: number = +teamworkHours - hoursToCompare + startingBalance;
+    //Calculate balances in hours
+    const hourBalances: number = Math.trunc(hours);
+    //Calculate minutes from left over hours
+    const minuteBalances: number = Math.ceil((hours % 1) * 60);
+    //Calculate balances in hours for past seven days
+    const sevenDaysHourBalances: number = Math.trunc(pastSevenDaysHours);
+    //Calculate minutes from left over hours for past seven days
+    const sevenDaysMinuteBalances: number = Math.ceil(
+      ((pastSevenDaysHours - sevenDaysHourBalances) % 1) % 60
     );
 
-    //Texts to be rendered
-    const totalsText: string =
-      total_left_mins !== 0
-        ? `${total_hours}h ${total_left_mins}min`
-        : `${total_hours}h`;
+    //Texts to be rendered, if we dont have left over minutes just render hours
+    const balancesResponse: string =
+      minuteBalances !== 0
+        ? `${hourBalances}h ${minuteBalances}min`
+        : `${hourBalances}h`;
+    const pastSevenDaysResponse: string =
+      sevenDaysMinuteBalances !== 0
+        ? `${sevenDaysHourBalances}h ${sevenDaysMinuteBalances}min`
+        : `${sevenDaysHourBalances}h`;
 
-    const past7Days: string =
-      past_seven_days_left_mins !== 0
-        ? `${past_seven_days_h}h ${past_seven_days_left_mins}min`
-        : `${past_seven_days_h}h`;
-
+    /**
+     * Return needs to be object taht is converted to string.
+     * Text: this will be rendered to the customer as response.
+     * response_type: this sets the response type, ephemeral means that the response is visible
+     * only for the user that typed the slash command in slack
+     */
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        text: `Your balances are ${totalsText} from ${fromDate} to ${toDate}. From last 7 days your balances are ${past7Days}`,
+        text: `Your balances are ${balancesResponse} from ${fromDate} to ${toDate}. From last 7 days your balances are ${pastSevenDaysResponse}`,
         response_type: 'ephemeral',
       }),
     };

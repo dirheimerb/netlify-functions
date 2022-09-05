@@ -1,3 +1,9 @@
+//General object type
+export interface Obj<T> {
+  [key: string]: T;
+}
+
+//Interface for Teamwork time API response
 export interface TimeTotals {
   STATUS: string;
   'time-totals': {
@@ -14,10 +20,11 @@ export interface TimeTotals {
   };
 }
 
+//Interface for Teamwork user API response
 export interface TeamworkUser {
   people: people[];
 }
-
+//People object inside Teamwork user API people array
 interface people {
   id: number;
   firstName: string;
