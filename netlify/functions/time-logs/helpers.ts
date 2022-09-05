@@ -41,7 +41,7 @@ export const pastSevenDays = async function (
  * Function that calculates work days for passed time
  * @param start Startig date for calculation
  * @param end End date for calculation
- * @returns
+ * @returns number of days
  */
 export const workDays = (start: Date, end: Date) => {
   let count: number = 0;

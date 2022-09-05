@@ -7,7 +7,7 @@ import {
   arrToString,
 } from './helpers';
 
-//Netlify mandatory handler function
+//Netlify mandatory handler function, thins function is run when Netlify function is
 const handler: Handler = async (event, context) => {
   try {
     //Get date for yesterday
@@ -44,24 +44,24 @@ const handler: Handler = async (event, context) => {
     if (customParameter) {
       const customParameters: Array<string> = customParameter.split('+');
       //Get custom starting date from Slack parameters
-      if (customParameters.some((e: any) => e.includes('from%3D'))) {
+      if (customParameters.some((e: string) => e.includes('from%3D'))) {
         const customDateFrom = arrToString(customParameters, 'from%3D');
         fromDate = customDateFrom;
         fromDateStr = fromDate.replace(/-/g, '');
       }
       //Get custom end date from Slack parameters
-      if (customParameters.some((e: any) => e.includes('to%3D'))) {
+      if (customParameters.some((e: string) => e.includes('to%3D'))) {
         const customDateTo = arrToString(customParameters, 'to%3D');
         toDate = customDateTo;
         toDateStr = toDate.replace(/-/g, '');
       }
       //Get custom worktime from Slack parameters
-      if (customParameters.some((e: any) => e.includes('worktime%3D'))) {
+      if (customParameters.some((e: string) => e.includes('worktime%3D'))) {
         const customWorktime = arrToString(customParameters, 'worktime%3D');
         worktime = +customWorktime;
       }
       //Get custom starting balances from Slack parameters
-      if (customParameters.some((e: any) => e.includes('balances%3D'))) {
+      if (customParameters.some((e: string) => e.includes('balances%3D'))) {
         const customStartingBalance = arrToString(
           customParameters,
           'balances%3D'
@@ -74,23 +74,30 @@ const handler: Handler = async (event, context) => {
       `https://woolman.eu.teamwork.com/projects/api/v3/people.json?searchTerm=${email}`
     );
     const userId = userJSON.people[0].id;
+    console.log(userJSON);
 
     const mainHoursJSON = await fetchTeamworkData(
       `https://woolman.eu.teamwork.com/time/total.json?userId=${userId}&fromDate=${fromDateStr}&toDate=${toDateStr}&projectType=all`
     );
     const mainHours = mainHoursJSON['time-totals']['total-hours-sum'];
+    console.log(mainHoursJSON);
 
-    const pastSevenDaysHours = await pastSevenDays(yesterday, userId, worktime);
+    const pastSevenDaysHours: number = await pastSevenDays(
+      yesterday,
+      userId,
+      worktime
+    );
 
     const days = workDays(new Date(fromDate), new Date(toDate));
-    const mainHoursToCompare = days * worktime;
+    const mainHoursToCompare: number = days * worktime;
 
-    const calculatedMinutes = mainHours - mainHoursToCompare + startingBalance;
+    const calculatedMinutes: number =
+      mainHours - mainHoursToCompare + startingBalance;
 
-    const total_hours = Math.trunc(calculatedMinutes);
-    const total_left_mins = Math.ceil((calculatedMinutes % 1) * 60);
-    const past_seven_days_h = Math.trunc(pastSevenDaysHours);
-    const past_seven_days_left_mins = Math.ceil(
+    const total_hours: number = Math.trunc(calculatedMinutes);
+    const total_left_mins: number = Math.ceil((calculatedMinutes % 1) * 60);
+    const past_seven_days_h: number = Math.trunc(pastSevenDaysHours);
+    const past_seven_days_left_mins: number = Math.ceil(
       ((pastSevenDaysHours - past_seven_days_h) % 1) % 60
     );
 
@@ -119,6 +126,9 @@ const handler: Handler = async (event, context) => {
     console.log(err);
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         text: `Something went wrong. Make sure you typed extra parameters correctly!`,
         response_type: 'ephemeral',
@@ -126,5 +136,5 @@ const handler: Handler = async (event, context) => {
     };
   }
 };
-
+//Export handler as Netlify has documented it
 export { handler };
